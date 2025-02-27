@@ -1,6 +1,6 @@
 // === Constants ===
 const BASE = "https://fsa-crud-2aa9294fe819.herokuapp.com/api";
-const COHORT = ""; // Make sure to change this!
+const COHORT = "/2024toko"; // Make sure to change this!
 const API = BASE + COHORT;
 
 // === State ===
@@ -55,6 +55,36 @@ async function getGuests() {
   } catch (e) {
     console.error(e);
   }
+}
+
+/** Adds a new party to the API */
+async function addParty(name, description, date, location) {
+  try {
+    const isoDate = new Date(dateFromForm).toISOString();
+    const response = await fetch(API + "/events", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description, date: isoDate, location }),
+    });
+    const result = await response.json();
+    parties.push(result.data);
+    render();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/** Deletes a party from the API */
+async function deleteParty(id) {
+  try {
+    await fetch(API + "/events/" + id, { method: "delete" });
+    parties = parties.filter((party) => party.id !== id);
+    selectedParty = null;
+    render();
+  } catch (e) {
+    console.error(e);
+  }
+  de;
 }
 
 // === Components ===
@@ -141,6 +171,25 @@ function render() {
       <section id="selected">
         <h2>Party Details</h2>
         <SelectedParty></SelectedParty>
+      </section>
+      <section id="addPartySection">
+        <h2>Add a Party</h2>
+        <form id="addPartyForm">
+          <label for="partyName">Party Name:</label>
+          <input type="text" id="partyName" name="partyName" required>
+
+          <label for="partyDescription">Description:</label>
+          <input type="text" id="partyDescription" name="partyDescription" required>
+
+          <label for="partyDate">Date:</label>
+          <input type="date" id="partyDate" name="partyDate" required>
+
+          <label for="partyLocation">Location:</label>
+          <input type="text" id="partyLocation" name="partyLocation" required>
+
+          <button type="submit">Add Party</button>
+        </form>
+        <div id="errorMessage" style="color: red;"></div>
       </section>
     </main>
   `;
